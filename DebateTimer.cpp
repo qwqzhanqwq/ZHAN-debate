@@ -189,6 +189,8 @@ void DrawProgress(HDC hdc, RECT& rc) {
     DeleteObject(hBr);
 }
 
+
+
 // 窗口消息处理函数
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch (msg) {
@@ -266,8 +268,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         GetClientRect(hWnd, &rc);
 
         //DrawBackground(hdc, rc); // 绘制背景
-        //void DrawProgress(HDC hdc, RECT & rc);
-
+        //void ProgressBar(HDC hdc, RECT & rc);
 
         if (stages[currentStage].phase == PHASE_FREE) {
             wchar_t stageText[100];
