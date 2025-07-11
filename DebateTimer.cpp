@@ -15,7 +15,8 @@ using namespace std;
 // --- 全局变量定义与初始化 ---
 
 // 辩论阶段配置数据
-vector<DebateStage> stages = {
+vector<DebateStage> stages = 
+{
     // 阶段                   标题              时间  发言人            颜色
     {PHASE_OPENING,        L"主持人开场",      120, L"主持人发言",     RGB(128,128,128)},
     {PHASE_ZHENGLUN1,      L"立论阶段-正方",  180, L"正方一辩发言",   RGB(0, 0, 255)},
@@ -46,7 +47,8 @@ HFONT hFont = NULL;
 // --- 函数实现 ---
 
 // 初始化界面控件
-void InitControls(HWND hWnd) {
+void InitControls(HWND hWnd) 
+{
     RECT rc;
     GetClientRect(hWnd, &rc);
 
@@ -98,7 +100,8 @@ void InitControls(HWND hWnd) {
 }
 
 // 更新时间显示（格式：MM:SS）
-void UpdateTimeDisplay() {
+void UpdateTimeDisplay() 
+{
     wstringstream ss;
     ss << timeLeft / 60 << L":"
         << (timeLeft % 60 < 10 ? L"0" : L"") << timeLeft % 60;
@@ -106,18 +109,22 @@ void UpdateTimeDisplay() {
 }
 
 // 切换至下一阶段
-void NextStage(HWND hWnd) {
+void NextStage(HWND hWnd) 
+{
     if (currentStage >= stages.size() - 1) return;
 
-    if (stages[currentStage].phase == PHASE_FREE) {
+    if (stages[currentStage].phase == PHASE_FREE) 
+    {
         bool zhengExhausted = (zhengRemain <= 0 && isZhengTurn);
         bool fanExhausted = (fanRemain <= 0 && !isZhengTurn);
 
-        if ((zhengRemain <= 0 && fanRemain <= 0) || zhengExhausted || fanExhausted) {
+        if ((zhengRemain <= 0 && fanRemain <= 0) || zhengExhausted || fanExhausted) 
+        {
             currentStage++;
             timeLeft = stages[currentStage].totalTime;
         }
-        else {
+        else 
+        {
             isZhengTurn = !isZhengTurn;
             currentSpeechTime = min(60, isZhengTurn ? zhengRemain : fanRemain);
             timeLeft = currentSpeechTime;
@@ -126,12 +133,14 @@ void NextStage(HWND hWnd) {
             return;
         }
     }
-    else {
+    else 
+    {
         currentStage++;
         timeLeft = stages[currentStage].totalTime;
     }
 
-    if (stages[currentStage].phase == PHASE_FREE) {
+    if (stages[currentStage].phase == PHASE_FREE) 
+    {
         zhengRemain = 300;
         fanRemain = 300;
         isZhengTurn = true;
@@ -139,7 +148,8 @@ void NextStage(HWND hWnd) {
         timeLeft = currentSpeechTime;
     }
 
-    if (currentStage >= stages.size() - 1) {
+    if (currentStage >= stages.size() - 1) 
+    {
         KillTimer(hWnd, ID_TIMER);
         isRunning = false;
     }
@@ -149,7 +159,8 @@ void NextStage(HWND hWnd) {
 }
 
 // 绘制圆形进度条
-void DrawProgress(HDC hdc, RECT& rc) {
+void DrawProgress(HDC hdc, RECT& rc) 
+{
     DebateStage& stage = stages[currentStage];
     int diameter = min(rc.right, rc.bottom) - 40; // 进度条直径
     int x = (rc.right - diameter) / 2;  // 圆心X坐标
@@ -167,12 +178,14 @@ void DrawProgress(HDC hdc, RECT& rc) {
 
     // 计算进度百分比
     double progress = 0;
-    if (stage.phase == PHASE_FREE) {
+    if (stage.phase == PHASE_FREE) 
+    {
         // 自由辩论总进度计算
         int totalUsed = 600 - (zhengRemain + fanRemain);
         progress = totalUsed / 600.0;
     }
-    else {
+    else 
+    {
         // 常规阶段进度计算
         progress = (stage.totalTime - timeLeft) / (double)stage.totalTime;
     }
@@ -192,8 +205,10 @@ void DrawProgress(HDC hdc, RECT& rc) {
 
 
 // 窗口消息处理函数
-LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-    switch (msg) {
+LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) 
+{
+    switch (msg) 
+    {
     case WM_CREATE:
         InitControls(hWnd);
         currentStage = 0;
@@ -201,17 +216,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         UpdateTimeDisplay(); // 初始显示时间
         break;
 
-    case WM_COMMAND: {
+    case WM_COMMAND: 
+        {
         int wmId = LOWORD(wParam);
-        switch (wmId) {
+        switch (wmId) 
+        {
         case ID_START:
-            if (!isRunning) {
+            if (!isRunning) 
+            {
                 isRunning = true;
                 SetTimer(hWnd, ID_TIMER, 1000, NULL);
             }
             break;
         case ID_SKIP:
-            if (stages[currentStage].phase == PHASE_FREE) {
+            if (stages[currentStage].phase == PHASE_FREE) 
+            {
                 if (isZhengTurn) zhengRemain -= currentSpeechTime - timeLeft;
                 else fanRemain -= currentSpeechTime - timeLeft;
             }
@@ -237,8 +256,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     }
 
     case WM_TIMER:
-        if (stages[currentStage].phase == PHASE_FREE) {
-            if (timeLeft > 0) {
+        if (stages[currentStage].phase == PHASE_FREE) 
+        {
+            if (timeLeft > 0) 
+            {
                 timeLeft--;
                 if (isZhengTurn) zhengRemain--; else fanRemain--;
                 currentSpeechTime--;
@@ -249,7 +270,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
                 }
             }
         }
-        else {
+        else 
+        {
             if (timeLeft > 0) {
                 timeLeft--;
                 UpdateTimeDisplay();
@@ -261,16 +283,28 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         }
         break;
 
-    case WM_PAINT: {
+    case WM_PAINT: 
+        {
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hWnd, &ps);
         RECT rc;
         GetClientRect(hWnd, &rc);
 
-        //DrawBackground(hdc, rc); // 绘制背景
-        //void ProgressBar(HDC hdc, RECT & rc);
+        //void DrawBackground(hdc, rc); // 绘制背景
+       
+		//DrawProgress(hdc, rc); // 绘制圆形进度条
+		//// 绘制当前阶段标题和发言人
+		//SetBkMode(hdc, TRANSPARENT);
+		//SetTextColor(hdc, RGB(0, 0, 0));
+		//SelectObject(hdc, hFont);
+		//if (stages[currentStage].phase == PHASE_OPENING)
+		//{
+		//	SetWindowTextW(hStage, stages[currentStage].title);
+		//	SetWindowTextW(hSpeaker, stages[currentStage].speaker);
+		//}
 
-        if (stages[currentStage].phase == PHASE_FREE) {
+        if (stages[currentStage].phase == PHASE_FREE) 
+        {
             wchar_t stageText[100];
             swprintf(stageText, 100, L"自由辩论-%s（正剩%03d秒 反剩%03d秒）",
                 isZhengTurn ? L"正方" : L"反方", zhengRemain, fanRemain);
@@ -282,7 +316,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             SetWindowTextW(hSpeaker, speakerText);
         }
 
-        else {
+        else 
+        {
             SetWindowTextW(hStage, stages[currentStage].title);
             SetWindowTextW(hSpeaker, stages[currentStage].speaker);
         }
@@ -305,7 +340,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 // 程序入口
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
-    LPSTR lpCmdLine, int nCmdShow) {
+    LPSTR lpCmdLine, int nCmdShow) 
+{
     WNDCLASSEXW wcex = { sizeof(WNDCLASSEX) };
     wcex.style = CS_HREDRAW | CS_VREDRAW;
     wcex.lpfnWndProc = WndProc;
@@ -323,7 +359,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     UpdateWindow(hWnd);
 
     MSG msg;
-    while (GetMessage(&msg, nullptr, 0, 0)) {
+    while (GetMessage(&msg, nullptr, 0, 0)) 
+    {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
