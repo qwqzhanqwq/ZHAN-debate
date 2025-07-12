@@ -4,8 +4,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "DebateTimer.h"  // 包含头文件
-#include <sstream>        // wstringstream 仅在此文件使用
+#include "DebateTimer.h" 
+#include <sstream>        
 
 // 链接渐变填充库
 #pragma comment(lib, "msimg32.lib")
@@ -292,16 +292,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
         //void DrawBackground(hdc, rc); // 绘制背景
        
-		//DrawProgress(hdc, rc); // 绘制圆形进度条
-		//// 绘制当前阶段标题和发言人
-		//SetBkMode(hdc, TRANSPARENT);
-		//SetTextColor(hdc, RGB(0, 0, 0));
-		//SelectObject(hdc, hFont);
-		//if (stages[currentStage].phase == PHASE_OPENING)
-		//{
-		//	SetWindowTextW(hStage, stages[currentStage].title);
-		//	SetWindowTextW(hSpeaker, stages[currentStage].speaker);
-		//}
+		DrawProgress(hdc, rc); // 绘制圆形进度条
+		// 绘制当前阶段标题和发言人
+		SetBkMode(hdc, TRANSPARENT);
+		SetTextColor(hdc, RGB(0, 0, 0));
+		SelectObject(hdc, hFont);
+		if (stages[currentStage].phase == PHASE_OPENING)
+		{
+			SetWindowTextW(hStage, stages[currentStage].title);
+			SetWindowTextW(hSpeaker, stages[currentStage].speaker);
+		}
 
         if (stages[currentStage].phase == PHASE_FREE) 
         {

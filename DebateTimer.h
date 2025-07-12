@@ -17,7 +17,8 @@
 using namespace std;
 
 // 辩论阶段枚举定义
-enum PHASE {
+enum PHASE 
+{
     PHASE_OPENING,
     PHASE_ZHENGLUN1,
     PHASE_FANLUN1,
@@ -32,7 +33,8 @@ enum PHASE {
 };
 
 // 辩论阶段结构体
-struct DebateStage {
+struct DebateStage 
+{
     PHASE phase;
     const wchar_t* title;
     int totalTime;
@@ -58,6 +60,6 @@ extern HFONT hFont;
 void InitControls(HWND hWnd);
 void UpdateTimeDisplay();
 void NextStage(HWND hWnd);
-VOID DrawBackground(HDC hdc,RECT& rc);
+VOID ProgressBar(HDC hdc,RECT& rc);
 void DrawProgress(HDC hdc, RECT& rc);
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
