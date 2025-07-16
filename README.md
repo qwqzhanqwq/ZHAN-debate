@@ -7,7 +7,7 @@ ZHAN-debate是一个用于辩论赛的计时器工具，帮助辩论赛主持人
  直观的用户界面
  支持暂停和重置
 # 安装与运行
-下载发行版安装
+下载发行版并安装
 或
 1. 克隆仓库:git clone 
 https://github.com/qwqzhanqwq /ZHAN-debate.git
@@ -22,3 +22,28 @@ https://github.com/qwqzhanqwq /ZHAN-debate.git
 如有建议，请通过GitHub Issues或向qwqzhanqwq@outlook.com发送邮件联系我。 
 # License 
 MITLicense (详见LICENSE.txt)
+
+#ENGLISH:
+ZHAN-debate is a timer tool designed for debate competitions, helping moderators and participants accurately manage speaking time for each stage of the debate.
+# Features
+1. Supports multi-stage debate timing (e.g., statement, questioning, free debate, etc.)
+2. Visual display of timing progress
+3. Customizable timing for each stage
+4. Simple and intuitive user interface
+5. Sound alerts supported
+6. Pause and reset functions
+# Installation and Usage
+Download the release version and install it.
+or
+1. Clone the repository: git clone https://github.com/qwqzhanqwq/ZHAN-debate.git
+2. Enter the project directory and open the project file with a supported IDE (such as Visual Studio) or a C++ build environment.
+3. Compile and run ZHAN-debate.
+# Contribution
+1. After launching the program, set the timing for each stage as needed.
+2. Click the “Start” button, and the timer will proceed through each stage in order.
+3. You can pause, resume, or reset the timer at any time.
+4. There will be sound or visual alerts at the end of each stage.
+# Contribution
+Welcome to submit issues or pull requests to suggest improvements or fix bugs. If you have any suggestions, please contact me through GitHub Issues or by sending an email to qwqzhanqwq@outlook.com.
+#License
+MIT License (see LICENSE.txt for details)
