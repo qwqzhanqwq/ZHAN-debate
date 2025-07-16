@@ -10,7 +10,7 @@ ZHAN-debate是一个用于辩论赛的计时器工具，帮助辩论赛主持人
 下载发行版安装
 或
 1. 克隆仓库:git clone 
-https://github.com/qwqzhanqwq /ZHAN-debate.git 
+https://github.com/qwqzhanqwq /ZHAN-debate.git
 2.进入项目目录，使用支持的IDE (如Visual Studio)或C++编译环境打开项目文件。 
 3. 编译并运行ZHAN-debate。
 # 使用方法
