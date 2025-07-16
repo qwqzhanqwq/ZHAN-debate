@@ -19,6 +19,6 @@ https://github.com/qwqzhanqwq /ZHAN-debate.git
 3.可随时暂停、继续或重置计时。 
 # 贡献
 欢迎提交issue或pull request,提出改进建议或修复bug。 
-如有建议，请通过GitHub Issues联系我。 
+如有建议，请通过GitHub Issues或向qwqzhanqwq@outlook.com发送邮件联系我。 
 # License 
 MITLicense (详见LICENSE.txt)
