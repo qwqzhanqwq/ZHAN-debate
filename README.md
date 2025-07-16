@@ -23,7 +23,7 @@ https://github.com/qwqzhanqwq /ZHAN-debate.git
 # License 
 MITLicense (详见LICENSE.txt)
 
-#ENGLISH:
+# ENGLISH:
 ZHAN-debate is a timer tool designed for debate competitions, helping moderators and participants accurately manage speaking time for each stage of the debate.
 # Features
 1. Supports multi-stage debate timing (e.g., statement, questioning, free debate, etc.)
