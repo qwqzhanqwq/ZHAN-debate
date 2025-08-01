@@ -13,9 +13,8 @@ https://github.com/qwqzhanqwq /ZHAN-debate.git
 2. 进入项目目录，使用支持的IDE (如Visual Studio)或C++编译环境打开项目文件。 
 3. 编译并运行ZHAN-debate。
 # 使用方法
-1. 启动程序后，根据需求设置各阶段的计时时长。 
-2.点击"开始”按钮，计时器将按顺序运行各阶段。 
-3.可随时暂停、继续或重置计时。 
+1. 点击"开始”按钮，计时器将按顺序运行各阶段。 
+2. 可随时暂停、继续或重置计时。 
 # 贡献
 欢迎提交issue或pull request,提出改进建议或修复bug。 
 如有建议，请通过GitHub Issues或向qwqzhanqwq@outlook.com发送邮件联系我。 
@@ -35,11 +34,9 @@ or
 1. Clone the repository: git clone https://github.com/qwqzhanqwq/ZHAN-debate.git
 2. Enter the project directory and open the project file with a supported IDE (such as Visual Studio) or a C++ build environment.
 3. Compile and run ZHAN-debate.
-# Contribution
-1. After launching the program, set the timing for each stage as needed.
-2. Click the “Start” button, and the timer will proceed through each stage in order.
-3. You can pause, resume, or reset the timer at any time.
-4. There will be sound or visual alerts at the end of each stage.
+# How to use
+1. Click the "Start" button, and the timer will run the stages in order.
+2. Pause, resume or reset the timer at any time.
 # Contribution
 Welcome to submit issues or pull requests to suggest improvements or fix bugs. If you have any suggestions, please contact me through GitHub Issues or by sending an email to qwqzhanqwq@outlook.com.
 #License
