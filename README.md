@@ -39,5 +39,5 @@ or
 2. Pause, resume or reset the timer at any time.
 # Contribution
 Welcome to submit issues or pull requests to suggest improvements or fix bugs. If you have any suggestions, please contact me through GitHub Issues or by sending an email to qwqzhanqwq@outlook.com.
-#License
+# License
 MIT License (see LICENSE.txt for details)
