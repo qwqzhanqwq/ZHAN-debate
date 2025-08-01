@@ -3,7 +3,6 @@ ZHAN-debate是一个用于辩论赛的计时器工具，帮助辩论赛主持人
 # 特性
  支持多阶段的辩论赛计时(如立论、质询、自由辩论等) 
  可视化显示时进度
- 支持自定义各阶段时间
  直观的用户界面
  支持暂停和重置
 # 安装与运行
@@ -21,17 +20,15 @@ https://github.com/qwqzhanqwq /ZHAN-debate.git
 欢迎提交issue或pull request,提出改进建议或修复bug。 
 如有建议，请通过GitHub Issues或向qwqzhanqwq@outlook.com发送邮件联系我。 
 # License 
-MITLicense (详见LICENSE.txt)
+MIT License (详见LICENSE.txt)
 
 # ENGLISH:
 ZHAN-debate is a timer tool designed for debate competitions, helping moderators and participants accurately manage speaking time for each stage of the debate.
 # Features
 1. Supports multi-stage debate timing (e.g., statement, questioning, free debate, etc.)
 2. Visual display of timing progress
-3. Customizable timing for each stage
-4. Simple and intuitive user interface
-5. Sound alerts supported
-6. Pause and reset functions
+3. Simple and intuitive user interface
+4. Pause and reset functions
 # Installation and Usage
 Download the release version and install it.
 or
