@@ -1,105 +1,121 @@
-// Á´½Ó½¥±äÌî³ä¿â
+ï»¿// é“¾æ¥æ¸å˜å¡«å……åº“å’ŒGDI+åº“
+// Link gradient fill and GDI+ libraries
 #pragma comment(lib, "msimg32.lib")
+#pragma comment(lib, "gdiplus.lib")
+
 #include <windows.h>
 #include <iostream>
 #include <string>
 #include <vector>
 #include "DebateTimer.h" 
 #include <sstream>        
-
-// Á´½Ó½¥±äÌî³ä¿â
-#pragma comment(lib, "msimg32.lib")
+#include <gdiplus.h>
 
 using namespace std; 
+using namespace Gdiplus;
 
-// --- È«¾Ö±äÁ¿¶¨ÒåÓë³õÊ¼»¯ ---
+// --- å…¨å±€å˜é‡å®šä¹‰ä¸åˆå§‹åŒ– ---
+// --- Global variable definition and initialization ---
 
-// ±çÂÛ½×¶ÎÅäÖÃÊı¾İ
+// è¾©è®ºé˜¶æ®µé…ç½®æ•°æ®ï¼Œæ¯ä¸ªé˜¶æ®µåŒ…å«ç±»å‹ã€æ ‡é¢˜ã€æ€»æ—¶é•¿ã€å‘è¨€äººã€é¢œè‰²
+// Debate stage configuration, each stage includes type, title, total time, speaker, color
 vector<DebateStage> stages = 
 {
-    // ½×¶Î                   ±êÌâ              Ê±¼ä  ·¢ÑÔÈË            ÑÕÉ«
-    {PHASE_OPENING,        L"Ö÷³ÖÈË¿ª³¡",      120, L"Ö÷³ÖÈË·¢ÑÔ",     RGB(128,128,128)},
-    {PHASE_ZHENGLUN1,      L"Á¢ÂÛ½×¶Î-Õı·½",  180, L"Õı·½Ò»±ç·¢ÑÔ",   RGB(0, 0, 255)},
-    {PHASE_FANLUN1,        L"Á¢ÂÛ½×¶Î-·´·½",  180, L"·´·½Ò»±ç·¢ÑÔ",   RGB(255, 0, 0)},
-    {PHASE_BOLUN2,         L"²µÂÛ½×¶Î-Õı·½",  120, L"Õı·½¶ş±ç·¢ÑÔ",   RGB(0, 0, 200)},
-    {PHASE_FANBOLUN2,      L"²µÂÛ½×¶Î-·´·½",  120, L"·´·½¶ş±ç·¢ÑÔ",   RGB(200, 0, 0)},
-    {PHASE_ZHIXUN3,        L"ÖÊÑ¯½×¶Î-Õı·½",  120, L"Õı·½Èı±çÖÊÑ¯",   RGB(0, 0, 150)},
-    {PHASE_FANZHIXUN3,     L"ÖÊÑ¯½×¶Î-·´·½",  120, L"·´·½Èı±çÖÊÑ¯",   RGB(150, 0, 0)},
-    {PHASE_FREE,           L"×ÔÓÉ±çÂÛ",         600, L"×ÔÓÉ±çÂÛ×¼±¸",   RGB(100, 0, 100)},
-    {PHASE_SUMMARY_FAN,    L"×Ü½á³Â´Ê-·´·½",  180, L"·´·½ËÄ±ç×Ü½á",   RGB(200, 0, 0)},
-    {PHASE_SUMMARY_ZHENG,  L"×Ü½á³Â´Ê-Õı·½",  180, L"Õı·½ËÄ±ç×Ü½á",   RGB(0, 0, 200)},
-    {PHASE_END,            L"±ÈÈü½áÊø",          0,  L"",                RGB(128,128,128)}
+    // é˜¶æ®µ                   æ ‡é¢˜              æ—¶é—´  å‘è¨€äºº            é¢œè‰²
+    // Phase                 Title            Time  Speaker           Color
+    {PHASE_OPENING,        L"ä¸»æŒäººå¼€åœº",      120, L"ä¸»æŒäººå‘è¨€",     RGB(128,128,128)},
+    {PHASE_ZHENGLUN1,      L"ç«‹è®ºé˜¶æ®µ-æ­£æ–¹",  180, L"æ­£æ–¹ä¸€è¾©å‘è¨€",   RGB(0, 0, 255)},
+    {PHASE_FANLUN1,        L"ç«‹è®ºé˜¶æ®µ-åæ–¹",  180, L"åæ–¹ä¸€è¾©å‘è¨€",   RGB(255, 0, 0)},
+    {PHASE_BOLUN2,         L"é©³è®ºé˜¶æ®µ-æ­£æ–¹",  120, L"æ­£æ–¹äºŒè¾©å‘è¨€",   RGB(0, 0, 200)},
+    {PHASE_FANBOLUN2,      L"é©³è®ºé˜¶æ®µ-åæ–¹",  120, L"åæ–¹äºŒè¾©å‘è¨€",   RGB(200, 0, 0)},
+    {PHASE_ZHIXUN3,        L"è´¨è¯¢é˜¶æ®µ-æ­£æ–¹",  120, L"æ­£æ–¹ä¸‰è¾©è´¨è¯¢",   RGB(0, 0, 150)},
+    {PHASE_FANZHIXUN3,     L"è´¨è¯¢é˜¶æ®µ-åæ–¹",  120, L"åæ–¹ä¸‰è¾©è´¨è¯¢",   RGB(150, 0, 0)},
+    {PHASE_FREE,           L"è‡ªç”±è¾©è®º",         600, L"è‡ªç”±è¾©è®ºå‡†å¤‡",   RGB(100, 0, 100)},
+    {PHASE_SUMMARY_FAN,    L"æ€»ç»“é™ˆè¯-åæ–¹",  180, L"åæ–¹å››è¾©æ€»ç»“",   RGB(200, 0, 0)},
+    {PHASE_SUMMARY_ZHENG,  L"æ€»ç»“é™ˆè¯-æ­£æ–¹",  180, L"æ­£æ–¹å››è¾©æ€»ç»“",   RGB(0, 0, 200)},
+    {PHASE_END,            L"æ¯”èµ›ç»“æŸ",          0,  L"",                RGB(128,128,128)}
 };
 
-// ×´Ì¬±äÁ¿
-int currentStage = 0;
-int timeLeft = 0;
-bool isRunning = false;
-int zhengRemain = 300;
-int fanRemain = 300;
-int currentSpeechTime = 0;
-bool isZhengTurn = true;
+// çŠ¶æ€å˜é‡
+// State variables
+int currentStage = 0;         // å½“å‰é˜¶æ®µç´¢å¼• // Current stage index
+int timeLeft = 0;             // å½“å‰é˜¶æ®µå‰©ä½™æ—¶é—´ï¼ˆç§’ï¼‰ // Remaining time in current stage (seconds)
+bool isRunning = false;       // è®¡æ—¶å™¨æ˜¯å¦è¿è¡Œ // Is timer running
+int zhengRemain = 300;        // è‡ªç”±è¾©è®ºæ­£æ–¹å‰©ä½™æ—¶é—´ // Remaining time for pro side in free debate
+int fanRemain = 300;          // è‡ªç”±è¾©è®ºåæ–¹å‰©ä½™æ—¶é—´ // Remaining time for con side in free debate
+int currentSpeechTime = 0;    // å½“å‰å‘è¨€å‰©ä½™æ—¶é—´ï¼ˆè‡ªç”±è¾©è®ºç”¨ï¼‰ // Remaining speech time in free debate
+bool isZhengTurn = true;      // å½“å‰æ˜¯å¦æ­£æ–¹å‘è¨€ // Is it pro side's turn
 
-// ´°¿Ú¿Ø¼ş¾ä±ú
+// çª—å£æ§ä»¶å¥æŸ„
+// Window control handles
 HWND hStage = NULL, hSpeaker = NULL, hTime = NULL, hStartBtn = NULL, hPauseBtn = NULL, hResetBtn = NULL, hSkipBtn = NULL;
 HFONT hFont = NULL;
 
-// --- º¯ÊıÊµÏÖ ---
+// --- å‡½æ•°å®ç° ---
+// --- Function implementation ---
 
-// ³õÊ¼»¯½çÃæ¿Ø¼ş
+// åˆå§‹åŒ–ç•Œé¢æ§ä»¶
+// Initialize UI controls
 void InitControls(HWND hWnd) 
 {
     RECT rc;
     GetClientRect(hWnd, &rc);
 
+    // åˆ›å»ºå­—ä½“ // Create font
     hFont = CreateFont(18, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
         DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
-        DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, L"Î¢ÈíÑÅºÚ");
+        DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, L"å¾®è½¯é›…é»‘");
 
+    // åˆ›å»ºæ˜¾ç¤ºé˜¶æ®µçš„é™æ€æ–‡æœ¬æ§ä»¶ // Create static text control for stage
     hStage = CreateWindowW(L"STATIC", L"",
         WS_VISIBLE | WS_CHILD | SS_CENTER,
         10, 10, rc.right - 20, 30, hWnd, NULL, NULL, NULL);
 
+    // åˆ›å»ºæ˜¾ç¤ºå‘è¨€äººçš„é™æ€æ–‡æœ¬æ§ä»¶ // Create static text control for speaker
     hSpeaker = CreateWindowW(L"STATIC", L"",
         WS_VISIBLE | WS_CHILD | SS_CENTER,
         10, 50, rc.right - 20, 30, hWnd, NULL, NULL, NULL);
 
+    // åˆ›å»ºæ˜¾ç¤ºæ—¶é—´çš„é™æ€æ–‡æœ¬æ§ä»¶ // Create static text control for time
     hTime = CreateWindowW(L"STATIC", L"00:00",
         WS_VISIBLE | WS_CHILD | SS_CENTER,
         10, 100, rc.right - 20, 40, hWnd, NULL, NULL, NULL);
 
+    // è®¡ç®—æŒ‰é’®å¸ƒå±€ // Calculate button layout
     int btnY = 200;
     int btnWidth = 80;
     int btnSpacing = 10;
     int totalBtnWidth = 4 * btnWidth + 3 * btnSpacing;
     int startX = (rc.right - totalBtnWidth) / 2;
 
-    hStartBtn = CreateWindowW(L"BUTTON", L"¿ªÊ¼",
-        WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-        startX, btnY, btnWidth, 35,
-        hWnd, (HMENU)ID_START, NULL, NULL);
+    // åˆ›å»ºâ€œå¼€å§‹â€æŒ‰é’® // Create "Start" button
+    hStartBtn = CreateWindowW(L"BUTTON", L"å¼€å§‹",
+        WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON | BS_FLAT,
+        50, 200, 100, 40, hWnd, (HMENU)ID_START, NULL, NULL);
 
-    hPauseBtn = CreateWindowW(L"BUTTON", L"ÔİÍ£",
-        WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-        startX + (btnWidth + btnSpacing), btnY,
-        btnWidth, 35, hWnd, (HMENU)ID_PAUSE, NULL, NULL);
+    // åˆ›å»ºâ€œæš‚åœâ€æŒ‰é’® // Create "Pause" button
+    hPauseBtn = CreateWindowW(L"BUTTON", L"æš‚åœ",
+        WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON | BS_FLAT,
+        160, 200, 100, 40, hWnd, (HMENU)ID_PAUSE, NULL, NULL);
 
-    hResetBtn = CreateWindowW(L"BUTTON", L"ÖØÖÃ",
-        WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-        startX + 2 * (btnWidth + btnSpacing), btnY,
-        btnWidth, 35, hWnd, (HMENU)ID_RESET, NULL, NULL);
+    // åˆ›å»ºâ€œé‡ç½®â€æŒ‰é’® // Create "Reset" button
+    hResetBtn = CreateWindowW(L"BUTTON", L"é‡ç½®",
+        WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON | BS_FLAT,
+        270, 200, 100, 40, hWnd, (HMENU)ID_RESET, NULL, NULL);
 
-    hSkipBtn = CreateWindowW(L"BUTTON", L"Ìø¹ı",
-        WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-        startX + 3 * (btnWidth + btnSpacing), btnY,
-        btnWidth, 35, hWnd, (HMENU)ID_SKIP, NULL, NULL);
+    // åˆ›å»ºâ€œè·³è¿‡â€æŒ‰é’® // Create "Skip" button
+    hSkipBtn = CreateWindowW(L"BUTTON", L"è·³è¿‡",
+        WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON | BS_FLAT,
+        380, 200, 100, 40, hWnd, (HMENU)ID_SKIP, NULL, NULL);
 
+    // è®¾ç½®å­—ä½“ // Set font
     SendMessage(hStage, WM_SETFONT, (WPARAM)hFont, TRUE);
     SendMessage(hSpeaker, WM_SETFONT, (WPARAM)hFont, TRUE);
     SendMessage(hTime, WM_SETFONT, (WPARAM)hFont, TRUE);
 }
 
-// ¸üĞÂÊ±¼äÏÔÊ¾£¨¸ñÊ½£ºMM:SS£©
+// æ›´æ–°æ—¶é—´æ˜¾ç¤ºï¼ˆæ ¼å¼ï¼šMM:SSï¼‰
+// Update time display (format: MM:SS)
 void UpdateTimeDisplay() 
 {
     wstringstream ss;
@@ -108,16 +124,20 @@ void UpdateTimeDisplay()
     SetWindowTextW(hTime, ss.str().c_str());
 }
 
-// ÇĞ»»ÖÁÏÂÒ»½×¶Î
+// åˆ‡æ¢è‡³ä¸‹ä¸€é˜¶æ®µ
+// Switch to next stage
 void NextStage(HWND hWnd) 
 {
     if (currentStage >= stages.size() - 1) return;
 
+    // è‡ªç”±è¾©è®ºé˜¶æ®µç‰¹æ®Šå¤„ç† // Special handling for free debate stage
     if (stages[currentStage].phase == PHASE_FREE) 
     {
         bool zhengExhausted = (zhengRemain <= 0 && isZhengTurn);
         bool fanExhausted = (fanRemain <= 0 && !isZhengTurn);
 
+        // å¦‚æœæ­£ååŒæ–¹éƒ½ç”¨å®Œæ—¶é—´æˆ–å½“å‰æ–¹ç”¨å®Œæ—¶é—´ï¼Œè¿›å…¥ä¸‹ä¸€é˜¶æ®µ
+        // If both sides used up time or current side used up, go to next stage
         if ((zhengRemain <= 0 && fanRemain <= 0) || zhengExhausted || fanExhausted) 
         {
             currentStage++;
@@ -125,6 +145,7 @@ void NextStage(HWND hWnd)
         }
         else 
         {
+            // åˆ‡æ¢å‘è¨€æ–¹ï¼Œåˆ†é…å‘è¨€æ—¶é—´ // Switch side, assign speech time
             isZhengTurn = !isZhengTurn;
             currentSpeechTime = min(60, isZhengTurn ? zhengRemain : fanRemain);
             timeLeft = currentSpeechTime;
@@ -135,10 +156,13 @@ void NextStage(HWND hWnd)
     }
     else 
     {
+        // æ™®é€šé˜¶æ®µç›´æ¥è¿›å…¥ä¸‹ä¸€é˜¶æ®µ // Normal stage, go to next
         currentStage++;
         timeLeft = stages[currentStage].totalTime;
     }
 
+    // è¿›å…¥è‡ªç”±è¾©è®ºé˜¶æ®µæ—¶åˆå§‹åŒ–åŒæ–¹æ—¶é—´
+    // Initialize both sides' time when entering free debate
     if (stages[currentStage].phase == PHASE_FREE) 
     {
         zhengRemain = 300;
@@ -148,6 +172,8 @@ void NextStage(HWND hWnd)
         timeLeft = currentSpeechTime;
     }
 
+    // æ¯”èµ›ç»“æŸæ—¶åœæ­¢è®¡æ—¶å™¨
+    // Stop timer when debate ends
     if (currentStage >= stages.size() - 1) 
     {
         KillTimer(hWnd, ID_TIMER);
@@ -158,62 +184,71 @@ void NextStage(HWND hWnd)
     UpdateTimeDisplay();
 }
 
-// »æÖÆÔ²ĞÎ½ø¶ÈÌõ
+// ç»˜åˆ¶åœ†å½¢è¿›åº¦æ¡
+// Draw circular progress bar
 void DrawProgress(HDC hdc, RECT& rc) 
 {
     DebateStage& stage = stages[currentStage];
-    int diameter = min(rc.right, rc.bottom) - 40; // ½ø¶ÈÌõÖ±¾¶
-    int x = (rc.right - diameter) / 2;  // Ô²ĞÄX×ø±ê
-    int y = (rc.bottom - diameter) / 2; // Ô²ĞÄY×ø±ê
+    int diameter = min(rc.right, rc.bottom) - 40; // è¿›åº¦æ¡ç›´å¾„ // Progress bar diameter
+    int x = (rc.right - diameter) / 2;  // åœ†å¿ƒXåæ ‡ // Center X
+    int y = (rc.bottom - diameter) / 2; // åœ†å¿ƒYåæ ‡ // Center Y
 
-    // »æÖÆ±³¾°Ô²
+    // ç»˜åˆ¶èƒŒæ™¯åœ† // Draw background circle
     HBRUSH hBr = CreateSolidBrush(RGB(230, 230, 230));
     SelectObject(hdc, hBr);
     Ellipse(hdc, x, y, x + diameter, y + diameter);
 
-    // ´´½¨½ø¶ÈÌõ»­±Ê
+    // åˆ›å»ºè¿›åº¦æ¡ç”»ç¬” // Create pen for progress bar
     HPEN hPen = CreatePen(PS_SOLID, 15, stage.color);
     SelectObject(hdc, hPen);
-    SelectObject(hdc, GetStockObject(NULL_BRUSH)); // ÎŞÌî³ä
+    SelectObject(hdc, GetStockObject(NULL_BRUSH)); // æ— å¡«å…… // No fill
 
-    // ¼ÆËã½ø¶È°Ù·Ö±È
+    // è®¡ç®—è¿›åº¦ç™¾åˆ†æ¯” // Calculate progress percent
     double progress = 0;
     if (stage.phase == PHASE_FREE) 
     {
-        // ×ÔÓÉ±çÂÛ×Ü½ø¶È¼ÆËã
+        // è‡ªç”±è¾©è®ºæ€»è¿›åº¦è®¡ç®— // Free debate total progress
         int totalUsed = 600 - (zhengRemain + fanRemain);
         progress = totalUsed / 600.0;
     }
     else 
     {
-        // ³£¹æ½×¶Î½ø¶È¼ÆËã
+        // å¸¸è§„é˜¶æ®µè¿›åº¦è®¡ç®— // Normal stage progress
         progress = (stage.totalTime - timeLeft) / (double)stage.totalTime;
     }
 
-    // »æÖÆÔ²»¡£¨´Ó12µã·½ÏòË³Ê±Õë»æÖÆ£©
-    int sweepAngle = (int)(3600 * progress); // 360¶È=3600µ¥Î»
+    // ç»˜åˆ¶åœ†å¼§ï¼ˆä»12ç‚¹æ–¹å‘é¡ºæ—¶é’ˆç»˜åˆ¶ï¼‰
+    // Draw arc (clockwise from 12 o'clock)
+    int sweepAngle = (int)(3600 * progress); // 360åº¦=3600å•ä½ // 360 deg = 3600 units
     Arc(hdc, x + 15, y + 15, x + diameter - 15, y + diameter - 15,
-        x + diameter / 2, y + 15,  // ÆğµãÔÚ12µã·½Ïò
+        x + diameter / 2, y + 15,  // èµ·ç‚¹åœ¨12ç‚¹æ–¹å‘ // Start at 12 o'clock
         x + diameter / 2 + (int)(diameter / 2 * cos(sweepAngle * 3.14159 / 1800)),
         y + diameter / 2 + (int)(diameter / 2 * sin(sweepAngle * 3.14159 / 1800)));
 
-    // ÇåÀí×ÊÔ´
+    // æ¸…ç†èµ„æº // Clean up resources
     DeleteObject(hPen);
     DeleteObject(hBr);
 }
 
-
-
-// ´°¿ÚÏûÏ¢´¦Àíº¯Êı
+// çª—å£æ¶ˆæ¯å¤„ç†å‡½æ•°
+// Window message handler
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) 
 {
     switch (msg) 
     {
     case WM_CREATE:
+        // åˆå§‹åŒ–æ§ä»¶å’ŒçŠ¶æ€ // Initialize controls and state
         InitControls(hWnd);
         currentStage = 0;
         timeLeft = stages[currentStage].totalTime;
-        UpdateTimeDisplay(); // ³õÊ¼ÏÔÊ¾Ê±¼ä
+        UpdateTimeDisplay(); // åˆå§‹æ˜¾ç¤ºæ—¶é—´ // Initial time display
+
+        // è®¾ç½®çª—å£ä¸ºåˆ†å±‚çª—å£ï¼ˆLayered Windowï¼‰ï¼Œå®ç°æ•´ä½“åŠé€æ˜
+        // Set window as layered for overall transparency
+        SetWindowLong(hWnd, GWL_EXSTYLE, GetWindowLong(hWnd, GWL_EXSTYLE) | WS_EX_LAYERED);
+        // è®¾ç½®æ•´ä½“çª—å£é€æ˜åº¦ï¼ˆ200ä¸ºä¸é€æ˜åº¦ï¼Œ0~255ï¼Œæ•°å€¼è¶Šå°è¶Šé€æ˜ï¼‰
+        // Set window alpha (200 = less transparent, 0~255)
+        SetLayeredWindowAttributes(hWnd, 0, 230, LWA_ALPHA);
         break;
 
     case WM_COMMAND: 
@@ -222,6 +257,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         switch (wmId) 
         {
         case ID_START:
+            // å¼€å§‹è®¡æ—¶ // Start timer
             if (!isRunning) 
             {
                 isRunning = true;
@@ -229,8 +265,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
             }
             break;
         case ID_SKIP:
+            // è·³è¿‡å½“å‰é˜¶æ®µ // Skip current stage
             if (stages[currentStage].phase == PHASE_FREE) 
             {
+                // æ‰£é™¤æœªç”¨å®Œçš„å‘è¨€æ—¶é—´ // Deduct unused speech time
                 if (isZhengTurn) zhengRemain -= currentSpeechTime - timeLeft;
                 else fanRemain -= currentSpeechTime - timeLeft;
             }
@@ -238,10 +276,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
             if (isRunning) SetTimer(hWnd, ID_TIMER, 1000, NULL);
             break;
         case ID_PAUSE:
+            // æš‚åœè®¡æ—¶ // Pause timer
             KillTimer(hWnd, ID_TIMER);
             isRunning = false;
             break;
         case ID_RESET:
+            // é‡ç½®æ‰€æœ‰çŠ¶æ€ // Reset all state
             KillTimer(hWnd, ID_TIMER);
             currentStage = 0;
             timeLeft = stages[currentStage].totalTime;
@@ -256,8 +296,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     }
 
     case WM_TIMER:
+        // å®šæ—¶å™¨æ¶ˆæ¯ï¼Œæ¯ç§’è§¦å‘ä¸€æ¬¡ // Timer message, triggered every second
         if (stages[currentStage].phase == PHASE_FREE) 
         {
+            // è‡ªç”±è¾©è®ºé˜¶æ®µ // Free debate stage
             if (timeLeft > 0) 
             {
                 timeLeft--;
@@ -265,6 +307,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 currentSpeechTime--;
                 UpdateTimeDisplay();
                 InvalidateRect(hWnd, NULL, TRUE);
+                // å½“å‰å‘è¨€æ—¶é—´æˆ–æ–¹ç”¨å®Œï¼Œåˆ‡æ¢ // Switch when speech time or side time is up
                 if (currentSpeechTime <= 0 || (isZhengTurn && zhengRemain <= 0) || (!isZhengTurn && fanRemain <= 0)) {
                     NextStage(hWnd);
                 }
@@ -272,6 +315,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         }
         else 
         {
+            // æ™®é€šé˜¶æ®µ // Normal stage
             if (timeLeft > 0) {
                 timeLeft--;
                 UpdateTimeDisplay();
@@ -290,32 +334,44 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         RECT rc;
         GetClientRect(hWnd, &rc);
 
-        //void DrawBackground(hdc, rc); // »æÖÆ±³¾°
-       
-		DrawProgress(hdc, rc); // »æÖÆÔ²ĞÎ½ø¶ÈÌõ
-		// »æÖÆµ±Ç°½×¶Î±êÌâºÍ·¢ÑÔÈË
-		SetBkMode(hdc, TRANSPARENT);
-		SetTextColor(hdc, RGB(0, 0, 0));
-		SelectObject(hdc, hFont);
-		if (stages[currentStage].phase == PHASE_OPENING)
-		{
-			SetWindowTextW(hStage, stages[currentStage].title);
-			SetWindowTextW(hSpeaker, stages[currentStage].speaker);
-		}
+        // ä½¿ç”¨ GDI+ ç»˜åˆ¶åŠé€æ˜èƒŒæ™¯ // Draw semi-transparent background with GDI+
+        Graphics graphics(hdc);
+        graphics.SetSmoothingMode(SmoothingModeAntiAlias);
 
+        // åŠé€æ˜æµ…ç°è‰²èƒŒæ™¯ï¼ˆARGB: 128ä¸ºåŠé€æ˜ï¼‰ // Semi-transparent light gray background (ARGB: 128 is semi-transparent)
+        SolidBrush semiTransBrush(Color(128, 240, 240, 240));
+        graphics.FillRectangle(&semiTransBrush, 
+            static_cast<INT>(rc.left), 
+            static_cast<INT>(rc.top), 
+            static_cast<INT>(rc.right - rc.left), 
+            static_cast<INT>(rc.bottom - rc.top));
+
+        // ç»˜åˆ¶åœ†å½¢è¿›åº¦æ¡ // Draw circular progress bar
+        DrawProgress(hdc, rc);
+
+        // ç»˜åˆ¶å½“å‰é˜¶æ®µæ ‡é¢˜å’Œå‘è¨€äºº // Draw current stage title and speaker
+        SetBkMode(hdc, TRANSPARENT);
+        SetTextColor(hdc, RGB(0, 0, 0));
+        SelectObject(hdc, hFont);
+        if (stages[currentStage].phase == PHASE_OPENING)
+        {
+            SetWindowTextW(hStage, stages[currentStage].title);
+            SetWindowTextW(hSpeaker, stages[currentStage].speaker);
+        }
+
+        // è‡ªç”±è¾©è®ºé˜¶æ®µæ˜¾ç¤ºå‰©ä½™æ—¶é—´ // Show remaining time in free debate
         if (stages[currentStage].phase == PHASE_FREE) 
         {
             wchar_t stageText[100];
-            swprintf(stageText, 100, L"×ÔÓÉ±çÂÛ-%s£¨ÕıÊ£%03dÃë ·´Ê£%03dÃë£©",
-                isZhengTurn ? L"Õı·½" : L"·´·½", zhengRemain, fanRemain);
+            swprintf(stageText, 100, L"è‡ªç”±è¾©è®º-%sï¼ˆæ­£å‰©%03dç§’ åå‰©%03dç§’ï¼‰",
+                isZhengTurn ? L"æ­£æ–¹" : L"åæ–¹", zhengRemain, fanRemain);
             SetWindowTextW(hStage, stageText);
 
             wchar_t speakerText[50];
-            swprintf(speakerText, 50, L"%s·¢ÑÔ£¨Ê£%02dÃë£©",
-                isZhengTurn ? L"Õı·½" : L"·´·½", currentSpeechTime);
+            swprintf(speakerText, 50, L"%så‘è¨€ï¼ˆå‰©%02dç§’ï¼‰",
+                isZhengTurn ? L"æ­£æ–¹" : L"åæ–¹", currentSpeechTime);
             SetWindowTextW(hSpeaker, speakerText);
         }
-
         else 
         {
             SetWindowTextW(hStage, stages[currentStage].title);
@@ -327,21 +383,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     }
 
     case WM_DESTROY:
+        // ç¨‹åºé€€å‡ºæ—¶æ¸…ç†èµ„æº // Clean up resources on exit
         KillTimer(hWnd, ID_TIMER);
         DeleteObject(hFont);
         PostQuitMessage(0);
         break;
 
     default:
+        // å…¶ä»–æ¶ˆæ¯é»˜è®¤å¤„ç† // Default message handling
         return DefWindowProc(hWnd, msg, wParam, lParam);
     }
     return 0;
 }
 
-// ³ÌĞòÈë¿Ú
+// ç¨‹åºå…¥å£
+// Program entry point
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     LPSTR lpCmdLine, int nCmdShow) 
 {
+    // åˆå§‹åŒ–GDI+åº“ // Initialize GDI+ library
+    GdiplusStartupInput gdiplusStartupInput;
+    ULONG_PTR gdiplusToken;
+    GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+
+    // æ³¨å†Œçª—å£ç±» // Register window class
     WNDCLASSEXW wcex = { sizeof(WNDCLASSEX) };
     wcex.style = CS_HREDRAW | CS_VREDRAW;
     wcex.lpfnWndProc = WndProc;
@@ -351,18 +416,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     wcex.lpszClassName = L"DebateTimerClass";
     RegisterClassExW(&wcex);
 
-    HWND hWnd = CreateWindowW(L"DebateTimerClass", L"±çÂÛÈü¼ÆÊ±Æ÷",
+    // åˆ›å»ºä¸»çª—å£ // Create main window
+    HWND hWnd = CreateWindowW(L"DebateTimerClass", L"è¾©è®ºèµ›è®¡æ—¶å™¨",
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, 0, 600, 400, NULL, NULL, hInstance, NULL);
 
     ShowWindow(hWnd, nCmdShow);
     UpdateWindow(hWnd);
 
+    // æ¶ˆæ¯å¾ªç¯ // Message loop
     MSG msg;
     while (GetMessage(&msg, nullptr, 0, 0)) 
     {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
+
+    // å…³é—­GDI+åº“ // Shutdown GDI+ library
+    GdiplusShutdown(gdiplusToken);
+
     return (int)msg.wParam;
 }
