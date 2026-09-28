@@ -86,6 +86,10 @@ jobs:
           Remove-Item dist/vc_redist*.exe -ErrorAction SilentlyContinue
           Get-ChildItem "$env:VCToolsRedistDir/x64" -Directory -Filter "Microsoft.VC*.CRT" |
             ForEach-Object { Copy-Item "$($_.FullName)/*.dll" dist/ }
+          foreach ($dll in "vcruntime140.dll", "msvcp140.dll", "Qt6Quick.dll", "platforms/qwindows.dll") {
+            if (-not (Test-Path "dist/$dll")) { throw "missing $dll in package" }
+          }
+          Get-ChildItem dist -Name
           Copy-Item LICENSE.txt dist/
           Copy-Item resources/fonts/OFL.txt dist/Inter-OFL.txt
 
