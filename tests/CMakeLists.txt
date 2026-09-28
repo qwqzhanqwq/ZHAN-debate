@@ -1,0 +1,4 @@
+add_executable(debate_core_tests DebateTimerTests.cpp)
+target_link_libraries(debate_core_tests PRIVATE debate_core)
+zhan_set_warnings(debate_core_tests)
+add_test(NAME debate_core_tests COMMAND debate_core_tests)
