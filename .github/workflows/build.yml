@@ -1,0 +1,132 @@
+name: Build
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  linux:
+    name: Linux (Ubuntu 24.04, Qt 6.4)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Qt and build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            ninja-build qt6-base-dev qt6-declarative-dev \
+            qml6-module-qtquick qml6-module-qtquick-layouts qml6-module-qtquick-window \
+            qml6-module-qtquick-controls qml6-module-qtquick-templates \
+            qml6-module-qtqml qml6-module-qtqml-workerscript qt6-qpa-plugins libgl1-mesa-dev
+
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Unit tests
+        run: ctest --test-dir build --output-on-failure
+
+      # 启动 5 秒仍在运行且没有 QML 警告即视为界面加载成功
+      # The UI counts as loaded if it is still running after 5 s without any QML warning
+      - name: Smoke test
+        run: |
+          set +e
+          QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software timeout 5 ./build/src/app/zhan-debate 2> stderr.log
+          code=$?
+          cat stderr.log
+          test "$code" -eq 124 || { echo "app exited early with code $code"; exit 1; }
+          ! grep -q "qrc:/" stderr.log || { echo "QML warnings found"; exit 1; }
+
+      - name: Package
+        run: |
+          DESTDIR="$PWD/dist" cmake --install build
+          tar -C dist -czf zhan-debate-linux-x86_64.tar.gz .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: zhan-debate-linux-x86_64
+          path: zhan-debate-linux-x86_64.tar.gz
+
+  windows:
+    name: Windows (MSVC 2022, Qt 6.8)
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ilammy/msvc-dev-cmd@v1
+
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: "6.8.*"
+          arch: win64_msvc2022_64
+          cache: true
+
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Unit tests
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Package
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item build/src/app/zhan-debate.exe dist/
+          windeployqt --release --qmldir src/app/qml --no-translations dist/zhan-debate.exe
+          # 随附 VC++ 运行库 DLL，解压即可运行 // Ship the VC++ runtime DLLs so the zip runs as-is
+          Remove-Item dist/vc_redist*.exe -ErrorAction SilentlyContinue
+          Get-ChildItem "$env:VCToolsRedistDir/x64" -Directory -Filter "Microsoft.VC*.CRT" |
+            ForEach-Object { Copy-Item "$($_.FullName)/*.dll" dist/ }
+          Copy-Item LICENSE.txt dist/
+          Copy-Item resources/fonts/OFL.txt dist/Inter-OFL.txt
+
+      - name: Smoke test
+        shell: pwsh
+        run: |
+          $env:QT_QPA_PLATFORM = "offscreen"
+          $env:QT_QUICK_BACKEND = "software"
+          $env:QT_FORCE_STDERR_LOGGING = "1"
+          $p = Start-Process -FilePath dist/zhan-debate.exe -PassThru -RedirectStandardError stderr.log
+          Start-Sleep -Seconds 6
+          $exited = $p.HasExited
+          if (-not $exited) { Stop-Process -Id $p.Id -Force }
+          Get-Content stderr.log
+          if ($exited) { throw "app exited early with code $($p.ExitCode)" }
+          if (Select-String -Path stderr.log -Pattern "qrc:/" -Quiet) { throw "QML warnings found" }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: zhan-debate-windows-x64
+          path: dist/
+
+  release:
+    name: Publish release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [linux, windows]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Bundle
+        run: |
+          (cd artifacts/zhan-debate-windows-x64 && zip -r ../../zhan-debate-windows-x64.zip .)
+          cp artifacts/zhan-debate-linux-x86_64/zhan-debate-linux-x86_64.tar.gz .
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            zhan-debate-windows-x64.zip
+            zhan-debate-linux-x86_64.tar.gz

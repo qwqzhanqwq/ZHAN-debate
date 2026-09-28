@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=ZHAN Debate
+Name[zh_CN]=辩论赛计时器
+GenericName=Debate Timer
+GenericName[zh_CN]=辩论赛计时器
+Comment=Timer for debate competitions
+Comment[zh_CN]=用于辩论赛的多阶段计时器
+Exec=zhan-debate
+Icon=zhan-debate
+Terminal=false
+Categories=Utility;Education;
+Keywords=debate;timer;辩论;计时;
