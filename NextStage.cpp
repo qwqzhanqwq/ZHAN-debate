@@ -11,26 +11,28 @@ void NextStage(HWND hWnd)
     // 自由辩论阶段特殊处理 // Special handling for free debate stage
     if (stages[currentStage].phase == PHASE_FREE)
     {
-        bool zhengExhausted = (zhengRemain <= 0 && isZhengTurn);
-        bool fanExhausted = (fanRemain <= 0 && !isZhengTurn);
+        int selfRemain = isZhengTurn ? zhengRemain : fanRemain;
+        int otherRemain = isZhengTurn ? fanRemain : zhengRemain;
 
-        // 如果正反双方都用完时间或当前方用完时间，进入下一阶段
-        // If both sides used up time or current side used up, go to next stage
-        if ((zhengRemain <= 0 && fanRemain <= 0) || zhengExhausted || fanExhausted)
+        // 对方还有时间：切换发言方，分配发言时间
+        // Other side still has time: switch side, assign speech time
+        if (otherRemain > 0)
         {
-            currentStage++;
-            timeLeft = stages[currentStage].totalTime;
-        }
-        else
-        {
-            // 切换发言方，分配发言时间 // Switch side, assign speech time
             isZhengTurn = !isZhengTurn;
-            currentSpeechTime = min(60, isZhengTurn ? zhengRemain : fanRemain);
+            // 当前方时间已用完时不再轮换，对方可一次用完剩余时间
+            // If the current side has run out, there is no more alternation: the other side may use all its remaining time
+            currentSpeechTime = selfRemain > 0 ? min(60, otherRemain) : otherRemain;
             timeLeft = currentSpeechTime;
             InvalidateRect(hWnd, NULL, TRUE);
+            UpdateTimeDisplay();
             if (isRunning) SetTimer(hWnd, ID_TIMER, 1000, NULL);
             return;
         }
+
+        // 对方时间已用完（当前方用完或主动跳过剩余时间），进入下一阶段
+        // Other side has no time left (current side ran out or skips the rest): go to next stage
+        currentStage++;
+        timeLeft = stages[currentStage].totalTime;
     }
     else
     {

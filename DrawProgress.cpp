@@ -1,6 +1,9 @@
 ﻿#include <windows.h>
 #include <vector>
+#include <gdiplus.h>
 #include "DebateTimer.h" 
+
+using namespace Gdiplus;
 
 // 绘制圆形进度条
 // Draw circular progress bar
@@ -8,18 +11,17 @@ void DrawProgress(HDC hdc, RECT& rc)
 {
     DebateStage& stage = stages[currentStage];
     int diameter = min(rc.right, rc.bottom) - 40; // 进度条直径 // Progress bar diameter
-    int x = (rc.right - diameter) / 2;  // 圆心X坐标 // Center X
-    int y = (rc.bottom - diameter) / 2; // 圆心Y坐标 // Center Y
+    int x = (rc.right - diameter) / 2;  // 外接矩形左上角X坐标 // Bounding box left
+    int y = (rc.bottom - diameter) / 2; // 外接矩形左上角Y坐标 // Bounding box top
 
     // 绘制背景圆 // Draw background circle
     HBRUSH hBr = CreateSolidBrush(RGB(230, 230, 230));
-    SelectObject(hdc, hBr);
+    HGDIOBJ hOldBrush = SelectObject(hdc, hBr);
     Ellipse(hdc, x, y, x + diameter, y + diameter);
-
-    // 创建进度条画笔 // Create pen for progress bar
-    HPEN hPen = CreatePen(PS_SOLID, 15, stage.color);
-    SelectObject(hdc, hPen);
-    SelectObject(hdc, GetStockObject(NULL_BRUSH)); // 无填充 // No fill
+    // 先选回旧画刷再删除，仍被选入DC的对象无法删除，会造成GDI泄漏
+    // Restore the old brush before deleting; an object still selected into a DC cannot be deleted and leaks
+    SelectObject(hdc, hOldBrush);
+    DeleteObject(hBr);
 
     // 计算进度百分比 // Calculate progress percent
     double progress = 0;
@@ -29,21 +31,26 @@ void DrawProgress(HDC hdc, RECT& rc)
         int totalUsed = 600 - (zhengRemain + fanRemain);
         progress = totalUsed / 600.0;
     }
-    else
+    else if (stage.totalTime > 0)
     {
         // 常规阶段进度计算 // Normal stage progress
         progress = (stage.totalTime - timeLeft) / (double)stage.totalTime;
     }
+    else
+    {
+        // 比赛结束阶段时长为0，显示满圈，避免除以0 // End stage has no duration: show full ring, avoid dividing by 0
+        progress = 1.0;
+    }
+    progress = max(0.0, min(1.0, progress));
 
-    // 绘制圆弧（从12点方向顺时针绘制）
-    // Draw arc (clockwise from 12 o'clock)
-    int sweepAngle = (int)(3600 * progress); // 360度=3600单位 // 360 deg = 3600 units
-    Arc(hdc, x + 15, y + 15, x + diameter - 15, y + diameter - 15,
-        x + diameter / 2, y + 15,  // 起点在12点方向 // Start at 12 o'clock
-        x + diameter / 2 + (int)(diameter / 2 * cos(sweepAngle * 3.14159 / 1800)),
-        y + diameter / 2 + (int)(diameter / 2 * sin(sweepAngle * 3.14159 / 1800)));
-
-    // 清理资源 // Clean up resources
-    DeleteObject(hPen);
-    DeleteObject(hBr);
+    // 绘制圆弧：GDI+角度以3点方向为0度、顺时针为正，-90度即12点方向
+    // Draw arc: GDI+ angles start at 3 o'clock and grow clockwise, so -90 is 12 o'clock
+    if (progress > 0)
+    {
+        Graphics graphics(hdc);
+        graphics.SetSmoothingMode(SmoothingModeAntiAlias);
+        Pen pen(Color(255, GetRValue(stage.color), GetGValue(stage.color), GetBValue(stage.color)), 15.0f);
+        graphics.DrawArc(&pen, x + 15, y + 15, diameter - 30, diameter - 30,
+            -90.0f, (REAL)(360.0 * progress));
+    }
 }
