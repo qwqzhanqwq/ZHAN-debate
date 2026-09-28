@@ -1,60 +1,60 @@
-#include "DebateTimer.h" 
+ï»¿#include "DebateTimer.h" 
 
-// ³õÊ¼»¯½çÃæ¿Ø¼ş
+// åˆå§‹åŒ–ç•Œé¢æ§ä»¶
 // Initialize UI controls
 void InitControls(HWND hWnd)
 {
     RECT rc;
     GetClientRect(hWnd, &rc);
 
-    // ´´½¨×ÖÌå // Create font
+    // åˆ›å»ºå­—ä½“ // Create font
     hFont = CreateFont(18, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
         DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
-        DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, L"Î¢ÈíÑÅºÚ");
+        DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, L"å¾®è½¯é›…é»‘");
 
-    // ´´½¨ÏÔÊ¾½×¶ÎµÄ¾²Ì¬ÎÄ±¾¿Ø¼ş // Create static text control for stage
+    // åˆ›å»ºæ˜¾ç¤ºé˜¶æ®µçš„é™æ€æ–‡æœ¬æ§ä»¶ // Create static text control for stage
     hStage = CreateWindowW(L"STATIC", L"",
         WS_VISIBLE | WS_CHILD | SS_CENTER,
         10, 10, rc.right - 20, 30, hWnd, NULL, NULL, NULL);
 
-    // ´´½¨ÏÔÊ¾·¢ÑÔÈËµÄ¾²Ì¬ÎÄ±¾¿Ø¼ş // Create static text control for speaker
+    // åˆ›å»ºæ˜¾ç¤ºå‘è¨€äººçš„é™æ€æ–‡æœ¬æ§ä»¶ // Create static text control for speaker
     hSpeaker = CreateWindowW(L"STATIC", L"",
         WS_VISIBLE | WS_CHILD | SS_CENTER,
         10, 50, rc.right - 20, 30, hWnd, NULL, NULL, NULL);
 
-    // ´´½¨ÏÔÊ¾Ê±¼äµÄ¾²Ì¬ÎÄ±¾¿Ø¼ş // Create static text control for time
+    // åˆ›å»ºæ˜¾ç¤ºæ—¶é—´çš„é™æ€æ–‡æœ¬æ§ä»¶ // Create static text control for time
     hTime = CreateWindowW(L"STATIC", L"00:00",
         WS_VISIBLE | WS_CHILD | SS_CENTER,
         10, 100, rc.right - 20, 40, hWnd, NULL, NULL, NULL);
 
-    // ¼ÆËã°´Å¥²¼¾Ö // Calculate button layout
+    // è®¡ç®—æŒ‰é’®å¸ƒå±€ // Calculate button layout
     int btnY = 200;
     int btnWidth = 80;
     int btnSpacing = 10;
     int totalBtnWidth = 4 * btnWidth + 3 * btnSpacing;
     int startX = (rc.right - totalBtnWidth) / 2;
 
-    // ´´½¨¡°¿ªÊ¼¡±°´Å¥ // Create "Start" button
-    hStartBtn = CreateWindowW(L"BUTTON", L"¿ªÊ¼",
+    // åˆ›å»ºâ€œå¼€å§‹â€æŒ‰é’® // Create "Start" button
+    hStartBtn = CreateWindowW(L"BUTTON", L"å¼€å§‹",
         WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON | BS_FLAT,
         50, 200, 100, 40, hWnd, (HMENU)ID_START, NULL, NULL);
 
-    // ´´½¨¡°ÔİÍ£¡±°´Å¥ // Create "Pause" button
-    hPauseBtn = CreateWindowW(L"BUTTON", L"ÔİÍ£",
+    // åˆ›å»ºâ€œæš‚åœâ€æŒ‰é’® // Create "Pause" button
+    hPauseBtn = CreateWindowW(L"BUTTON", L"æš‚åœ",
         WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON | BS_FLAT,
         160, 200, 100, 40, hWnd, (HMENU)ID_PAUSE, NULL, NULL);
 
-    // ´´½¨¡°ÖØÖÃ¡±°´Å¥ // Create "Reset" button
-    hResetBtn = CreateWindowW(L"BUTTON", L"ÖØÖÃ",
+    // åˆ›å»ºâ€œé‡ç½®â€æŒ‰é’® // Create "Reset" button
+    hResetBtn = CreateWindowW(L"BUTTON", L"é‡ç½®",
         WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON | BS_FLAT,
         270, 200, 100, 40, hWnd, (HMENU)ID_RESET, NULL, NULL);
 
-    // ´´½¨¡°Ìø¹ı¡±°´Å¥ // Create "Skip" button
-    hSkipBtn = CreateWindowW(L"BUTTON", L"Ìø¹ı",
+    // åˆ›å»ºâ€œè·³è¿‡â€æŒ‰é’® // Create "Skip" button
+    hSkipBtn = CreateWindowW(L"BUTTON", L"è·³è¿‡",
         WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON | BS_FLAT,
         380, 200, 100, 40, hWnd, (HMENU)ID_SKIP, NULL, NULL);
 
-    // ÉèÖÃ×ÖÌå // Set font
+    // è®¾ç½®å­—ä½“ // Set font
     SendMessage(hStage, WM_SETFONT, (WPARAM)hFont, TRUE);
     SendMessage(hSpeaker, WM_SETFONT, (WPARAM)hFont, TRUE);
     SendMessage(hTime, WM_SETFONT, (WPARAM)hFont, TRUE);

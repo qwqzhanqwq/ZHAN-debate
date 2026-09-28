@@ -1,10 +1,10 @@
-#include <windows.h>
+ï»¿#include <windows.h>
 #include <iostream>
 #include <string>
 #include "DebateTimer.h" 
 #include <sstream>        
 
-// ¸üĞÂÊ±¼äÏÔÊ¾£¨¸ñÊ½£ºMM:SS£©
+// æ›´æ–°æ—¶é—´æ˜¾ç¤ºï¼ˆæ ¼å¼ï¼šMM:SSï¼‰
 // Update time display (format: MM:SS)
 void UpdateTimeDisplay()
 {

@@ -1,22 +1,22 @@
-#pragma once
+ï»¿#pragma once
 
-// Á´½Ó½¥±äÌî³ä¿â
+// é“¾æ¥æ¸å˜å¡«å……åº“
 #pragma comment(lib, "msimg32.lib")
 #include <windows.h>
 #include <string>
 #include <vector>
 #include <sstream>
 
-// ¿Ø¼şID¶¨Òå
-#define ID_TIMER        1     // ¶¨Ê±Æ÷ID
-#define ID_START        1001  // ¿ªÊ¼°´Å¥
-#define ID_PAUSE        1002  // ÔİÍ£°´Å¥
-#define ID_RESET        1003  // ÖØÖÃ°´Å¥
-#define ID_SKIP         1004  // Ìø¹ı°´Å¥
+// æ§ä»¶IDå®šä¹‰
+#define ID_TIMER        1     // å®šæ—¶å™¨ID
+#define ID_START        1001  // å¼€å§‹æŒ‰é’®
+#define ID_PAUSE        1002  // æš‚åœæŒ‰é’®
+#define ID_RESET        1003  // é‡ç½®æŒ‰é’®
+#define ID_SKIP         1004  // è·³è¿‡æŒ‰é’®
 
 using namespace std;
 
-// ±çÂÛ½×¶ÎÃ¶¾Ù¶¨Òå
+// è¾©è®ºé˜¶æ®µæšä¸¾å®šä¹‰
 enum PHASE 
 {
     PHASE_OPENING,
@@ -32,7 +32,7 @@ enum PHASE
     PHASE_END
 };
 
-// ±çÂÛ½×¶Î½á¹¹Ìå
+// è¾©è®ºé˜¶æ®µç»“æ„ä½“
 struct DebateStage 
 {
     PHASE phase;
@@ -42,7 +42,7 @@ struct DebateStage
     COLORREF color;
 };
 
-// ÉùÃ÷È«¾Ö±äÁ¿£¨ÔÚcppÀï¶¨Òå£©
+// å£°æ˜å…¨å±€å˜é‡ï¼ˆåœ¨cppé‡Œå®šä¹‰ï¼‰
 extern vector<DebateStage> stages;
 extern int currentStage;
 extern int timeLeft;
@@ -52,11 +52,11 @@ extern int fanRemain;
 extern int currentSpeechTime;
 extern bool isZhengTurn;
 
-// ´°¿Ú¿Ø¼ş¾ä±ú
+// çª—å£æ§ä»¶å¥æŸ„
 extern HWND hStage, hSpeaker, hTime, hStartBtn, hPauseBtn, hResetBtn, hSkipBtn;
 extern HFONT hFont;
 
-// º¯ÊıÉùÃ÷
+// å‡½æ•°å£°æ˜
 void InitControls(HWND hWnd);
 void UpdateTimeDisplay();
 void NextStage(HWND hWnd);

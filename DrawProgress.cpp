@@ -1,49 +1,49 @@
-#include <windows.h>
+ï»¿#include <windows.h>
 #include <vector>
 #include "DebateTimer.h" 
 
-// »æÖÆÔ²ĞÎ½ø¶ÈÌõ
+// ç»˜åˆ¶åœ†å½¢è¿›åº¦æ¡
 // Draw circular progress bar
 void DrawProgress(HDC hdc, RECT& rc)
 {
     DebateStage& stage = stages[currentStage];
-    int diameter = min(rc.right, rc.bottom) - 40; // ½ø¶ÈÌõÖ±¾¶ // Progress bar diameter
-    int x = (rc.right - diameter) / 2;  // Ô²ĞÄX×ø±ê // Center X
-    int y = (rc.bottom - diameter) / 2; // Ô²ĞÄY×ø±ê // Center Y
+    int diameter = min(rc.right, rc.bottom) - 40; // è¿›åº¦æ¡ç›´å¾„ // Progress bar diameter
+    int x = (rc.right - diameter) / 2;  // åœ†å¿ƒXåæ ‡ // Center X
+    int y = (rc.bottom - diameter) / 2; // åœ†å¿ƒYåæ ‡ // Center Y
 
-    // »æÖÆ±³¾°Ô² // Draw background circle
+    // ç»˜åˆ¶èƒŒæ™¯åœ† // Draw background circle
     HBRUSH hBr = CreateSolidBrush(RGB(230, 230, 230));
     SelectObject(hdc, hBr);
     Ellipse(hdc, x, y, x + diameter, y + diameter);
 
-    // ´´½¨½ø¶ÈÌõ»­±Ê // Create pen for progress bar
+    // åˆ›å»ºè¿›åº¦æ¡ç”»ç¬” // Create pen for progress bar
     HPEN hPen = CreatePen(PS_SOLID, 15, stage.color);
     SelectObject(hdc, hPen);
-    SelectObject(hdc, GetStockObject(NULL_BRUSH)); // ÎŞÌî³ä // No fill
+    SelectObject(hdc, GetStockObject(NULL_BRUSH)); // æ— å¡«å…… // No fill
 
-    // ¼ÆËã½ø¶È°Ù·Ö±È // Calculate progress percent
+    // è®¡ç®—è¿›åº¦ç™¾åˆ†æ¯” // Calculate progress percent
     double progress = 0;
     if (stage.phase == PHASE_FREE)
     {
-        // ×ÔÓÉ±çÂÛ×Ü½ø¶È¼ÆËã // Free debate total progress
+        // è‡ªç”±è¾©è®ºæ€»è¿›åº¦è®¡ç®— // Free debate total progress
         int totalUsed = 600 - (zhengRemain + fanRemain);
         progress = totalUsed / 600.0;
     }
     else
     {
-        // ³£¹æ½×¶Î½ø¶È¼ÆËã // Normal stage progress
+        // å¸¸è§„é˜¶æ®µè¿›åº¦è®¡ç®— // Normal stage progress
         progress = (stage.totalTime - timeLeft) / (double)stage.totalTime;
     }
 
-    // »æÖÆÔ²»¡£¨´Ó12µã·½ÏòË³Ê±Õë»æÖÆ£©
+    // ç»˜åˆ¶åœ†å¼§ï¼ˆä»12ç‚¹æ–¹å‘é¡ºæ—¶é’ˆç»˜åˆ¶ï¼‰
     // Draw arc (clockwise from 12 o'clock)
-    int sweepAngle = (int)(3600 * progress); // 360¶È=3600µ¥Î» // 360 deg = 3600 units
+    int sweepAngle = (int)(3600 * progress); // 360åº¦=3600å•ä½ // 360 deg = 3600 units
     Arc(hdc, x + 15, y + 15, x + diameter - 15, y + diameter - 15,
-        x + diameter / 2, y + 15,  // ÆğµãÔÚ12µã·½Ïò // Start at 12 o'clock
+        x + diameter / 2, y + 15,  // èµ·ç‚¹åœ¨12ç‚¹æ–¹å‘ // Start at 12 o'clock
         x + diameter / 2 + (int)(diameter / 2 * cos(sweepAngle * 3.14159 / 1800)),
         y + diameter / 2 + (int)(diameter / 2 * sin(sweepAngle * 3.14159 / 1800)));
 
-    // ÇåÀí×ÊÔ´ // Clean up resources
+    // æ¸…ç†èµ„æº // Clean up resources
     DeleteObject(hPen);
     DeleteObject(hBr);
 }

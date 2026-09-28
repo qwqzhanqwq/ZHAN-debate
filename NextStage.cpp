@@ -1,20 +1,20 @@
-#include <windows.h>
+ï»¿#include <windows.h>
 #include <vector>
 #include "DebateTimer.h" 
 
-// ÇĞ»»ÖÁÏÂÒ»½×¶Î
+// åˆ‡æ¢è‡³ä¸‹ä¸€é˜¶æ®µ
 // Switch to next stage
 void NextStage(HWND hWnd)
 {
     if (currentStage >= stages.size() - 1) return;
 
-    // ×ÔÓÉ±çÂÛ½×¶ÎÌØÊâ´¦Àí // Special handling for free debate stage
+    // è‡ªç”±è¾©è®ºé˜¶æ®µç‰¹æ®Šå¤„ç† // Special handling for free debate stage
     if (stages[currentStage].phase == PHASE_FREE)
     {
         bool zhengExhausted = (zhengRemain <= 0 && isZhengTurn);
         bool fanExhausted = (fanRemain <= 0 && !isZhengTurn);
 
-        // Èç¹ûÕı·´Ë«·½¶¼ÓÃÍêÊ±¼ä»òµ±Ç°·½ÓÃÍêÊ±¼ä£¬½øÈëÏÂÒ»½×¶Î
+        // å¦‚æœæ­£ååŒæ–¹éƒ½ç”¨å®Œæ—¶é—´æˆ–å½“å‰æ–¹ç”¨å®Œæ—¶é—´ï¼Œè¿›å…¥ä¸‹ä¸€é˜¶æ®µ
         // If both sides used up time or current side used up, go to next stage
         if ((zhengRemain <= 0 && fanRemain <= 0) || zhengExhausted || fanExhausted)
         {
@@ -23,7 +23,7 @@ void NextStage(HWND hWnd)
         }
         else
         {
-            // ÇĞ»»·¢ÑÔ·½£¬·ÖÅä·¢ÑÔÊ±¼ä // Switch side, assign speech time
+            // åˆ‡æ¢å‘è¨€æ–¹ï¼Œåˆ†é…å‘è¨€æ—¶é—´ // Switch side, assign speech time
             isZhengTurn = !isZhengTurn;
             currentSpeechTime = min(60, isZhengTurn ? zhengRemain : fanRemain);
             timeLeft = currentSpeechTime;
@@ -34,12 +34,12 @@ void NextStage(HWND hWnd)
     }
     else
     {
-        // ÆÕÍ¨½×¶ÎÖ±½Ó½øÈëÏÂÒ»½×¶Î // Normal stage, go to next
+        // æ™®é€šé˜¶æ®µç›´æ¥è¿›å…¥ä¸‹ä¸€é˜¶æ®µ // Normal stage, go to next
         currentStage++;
         timeLeft = stages[currentStage].totalTime;
     }
 
-    // ½øÈë×ÔÓÉ±çÂÛ½×¶ÎÊ±³õÊ¼»¯Ë«·½Ê±¼ä
+    // è¿›å…¥è‡ªç”±è¾©è®ºé˜¶æ®µæ—¶åˆå§‹åŒ–åŒæ–¹æ—¶é—´
     // Initialize both sides' time when entering free debate
     if (stages[currentStage].phase == PHASE_FREE)
     {
@@ -50,7 +50,7 @@ void NextStage(HWND hWnd)
         timeLeft = currentSpeechTime;
     }
 
-    // ±ÈÈü½áÊøÊ±Í£Ö¹¼ÆÊ±Æ÷
+    // æ¯”èµ›ç»“æŸæ—¶åœæ­¢è®¡æ—¶å™¨
     // Stop timer when debate ends
     if (currentStage >= stages.size() - 1)
     {
